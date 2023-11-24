@@ -1,6 +1,5 @@
 #ifndef OBJPOS_H
 #define OBJPOS_H
-
 class objPos
 {
     public:

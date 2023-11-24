@@ -9,7 +9,6 @@
 
 using namespace std;
 
-
 class GameMechs
 {
     // Construct the remaining declaration from the project manual.
@@ -25,19 +24,37 @@ class GameMechs
         int boardSizeX;
         int boardSizeY;
 
+        bool looseFlag;
+        int score;
+
     public:
+        char **map;
+        objPos food[5];
+        int g_delay;
+
         GameMechs();
         GameMechs(int boardX, int boardY);
+        ~GameMechs();
         
         bool getExitFlagStatus();
         void setExitTrue();
+
+        void setLooseTrue();
+        bool getLooseFlagStatus();
 
         char getInput();
         void setInput(char this_input);
         void clearInput();
 
+        int getScore();
+        void incrementScore();
+        void minusScore();
+
         int getBoardSizeX();
         int getBoardSizeY();
+
+        void generateFood(objPos blockOff);
+        void getFoodPos(objPos &returnPos, int index);
       
 
 };

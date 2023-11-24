@@ -5,8 +5,8 @@
 	//#define POSIX
 
 	#include <stdio.h>
-	#include <stdlib.h>	
-	//#include <unistd.h>
+	#include <stdlib.h>
+	#include <Windows.h>
 
 	void MacUILib_init(void);
 	void MacUILib_init_sync(void);
