@@ -24,14 +24,16 @@ class Player
         void updatePlayerDir();
         void movePlayer();
         void growPlayer(objPos lastpos);
+        void checkPlayer(objPos prev);
         void printSnake();
+        int snakelen();
 
     private:
         enum Dir curr;
         objPos playerPos;   // Upgrade this in iteration 3.
 
-        objPos* check = new objPos;
-        objPosArrayList* p_list = new objPosArrayList;
+        objPos* check;
+        objPosArrayList* p_list;
 
         // Need a reference to the Main Game Mechanisms
         

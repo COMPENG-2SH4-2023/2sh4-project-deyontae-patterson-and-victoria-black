@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "MacUILib.h"
 #include "objPos.h"
 #include "objPosArrayList.h"
@@ -12,7 +13,9 @@ using namespace std;
 GameMechs* snake;
 Player* p;
 objPos* pos;
+
 bool exitFlag;
+char bug[16];
 
 void Initialize(void);
 void GetInput(void);
@@ -20,6 +23,111 @@ void RunLogic(void);
 void DrawScreen(void);
 void LoopDelay(void);
 void CleanUp(void);
+
+void scoreboard(int player_score)
+{
+    int i;
+    int* scores = new int[5];
+    char** names = new char*[5];
+    FILE* file;
+
+    for(i=0; i<5; i++)
+    {
+        names[i] = new char[8];
+    }
+
+    // Read Names
+
+    file = fopen("names.txt", "r");
+
+    for(i=0; i<5; i++)
+    {
+        fscanf(file, "%s", names[i]);
+    }
+
+    fclose(file);
+
+    // Read Scores
+
+    file = fopen("scores.txt", "r");
+
+    for(i=0; i<5; i++)
+    {
+        fscanf(file, "%d", &scores[i]);
+    }
+
+    fclose(file);
+
+    // Operations
+
+    for(i=0; i<5; i++)
+    {
+        if(scores[i] < player_score)
+        {
+            // Insert new name and score into lists.
+
+            int j;
+
+            for(j=4; j>i; j--)
+            {
+                scores[j] = scores[j-1];
+                strcpy(names[j], names[j-1]);
+            }
+
+            scores[i] = player_score;
+
+            MacUILib_printf("\nCongratulations!\nYou made it to place %d on the Leaderboard!\n\nEnter your name (8 characters max):\n", (i+1));
+
+            cin >> names[i];
+
+            // Overwrite Names
+
+            file = fopen("names.txt", "w");
+
+            for (j=0; j<5; j++)
+            {
+                fprintf(file, "%s\n", names[j]);
+            }
+
+            fclose(file);
+
+            // Overwrite Scores
+
+            file = fopen("scores.txt", "w");
+
+            for (j=0; j<5; j++)
+            {
+                fprintf(file, "%d\n", scores[j]);
+            }
+
+            fclose(file);
+
+            break;
+        }
+    }
+
+    // Printing LeaderBoard
+
+    MacUILib_Delay(100000);
+    MacUILib_printf("\n\nLEADERBOARD:\n\n");
+
+    for(i=0; i<5; i++)
+    {
+        MacUILib_Delay(100000);
+        MacUILib_printf("%s -----> %d\n", names[i], scores[i]);
+    }
+
+    // Free space
+
+    for(int i=0; i<5; i++)
+    {
+        delete[] names[i];
+        names[i] = nullptr;
+    }
+
+    delete[] names;
+    delete[] scores;
+}
 
 int main(void)
 {
@@ -39,9 +147,23 @@ int main(void)
 
 void Initialize(void)
 {
+    // Input Gameboard Size
+
     int x,y;
 
     MacUILib_init();
+    
+
+    while(!MacUILib_hasChar())
+    {        
+        MacUILib_clearScreen();
+        MacUILib_Delay(500000);
+
+        MacUILib_printf("\t\tHello!\n\t     Welcome to:\n\nDeyontae Patterson and Victoria Black's\n\n\n\t     SNAKE GAME\n\n");
+        MacUILib_printf("Press any key to continue...\n");
+        MacUILib_Delay(500000);
+    }
+
     MacUILib_clearScreen();
 
     MacUILib_printf("Enter Game Board Width (Press 0 to enter default): \n");
@@ -51,6 +173,8 @@ void Initialize(void)
     cin >> y;
 
     MacUILib_clearScreen();
+
+    // Starting Game
 
     snake = new GameMechs(x,y);
 
@@ -63,6 +187,10 @@ void Initialize(void)
 
     snake->clearInput();
     snake->g_delay = DELAY_CONST;
+
+    // Debug Message
+
+    strcpy(bug, "[Debug Message]");
 }
 
 void GetInput(void)
@@ -70,6 +198,15 @@ void GetInput(void)
     if(MacUILib_hasChar())
     {
         snake->setInput(MacUILib_getChar());
+        
+        if((snake->getInput() != 'w') && (snake->getInput() != 'd') && (snake->getInput() != 's') && (snake->getInput() != 'a') && (snake->getInput() != '\b') && (snake->getInput() != ' '))
+        {
+            strcpy(bug, "Invalid Input!");
+        }
+        else
+        {
+            strcpy(bug, "[Debug Message]");
+        }
     }
 }
 
@@ -84,6 +221,8 @@ void RunLogic(void)
             snake->map[i][j] = ' ';
         }
     }
+
+    snake->map[0][0] = ' ';
 
     // Change Direction
 
@@ -178,8 +317,8 @@ void DrawScreen(void)
 
     // Player Stats
 
-    MacUILib_printf("\nScore %d\n", snake->getScore());
-    MacUILib_printf("======== DEBUG MESSAGE ========\n");
+    MacUILib_printf("\nScore %d  \tSnake Length: %d\n", snake->getScore(), p->snakelen());
+    MacUILib_printf("======== %s ========\n", bug);
     MacUILib_printf("Board Size: %d X %d\n", snake->getBoardSizeX(), snake->getBoardSizeY());
 
     MacUILib_printf("Player Direction: ");
@@ -220,7 +359,10 @@ void CleanUp(void)
 {
     MacUILib_clearScreen();
 
-    MacUILib_printf("Game Ended. You Scored: %d\n", snake->getScore());    
+    MacUILib_printf("Game Ended. You Scored: %d\n", snake->getScore());
+    scoreboard(snake->getScore());
+
+    MacUILib_Delay(10000000);
   
     MacUILib_uninit();
 

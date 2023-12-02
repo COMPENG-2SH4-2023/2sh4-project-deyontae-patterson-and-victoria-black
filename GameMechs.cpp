@@ -35,8 +35,8 @@ GameMechs::GameMechs(int boardX, int boardY)
     exitFlag = false;
     clearInput();
 
-    boardSizeX = (boardX >= 5) ? boardX:30;
-    boardSizeY = (boardX >= 15) ? boardX:15;
+    boardSizeX = (boardX >= 10) ? boardX:30;
+    boardSizeY = (boardY >= 5) ? boardY:15;
 
     score = 0;
 
@@ -143,7 +143,6 @@ void GameMechs::generateFood(objPos blockOff)
     int j = 0;
 
     int new_x, new_y;
-    char c;
 
     int *V_x = new int[boardSizeX];
     int *V_y = new int[boardSizeY];

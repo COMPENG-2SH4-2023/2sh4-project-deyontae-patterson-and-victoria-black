@@ -33,6 +33,11 @@ void objPosArrayList::insertHead(objPos thisPos)
     thisPos.getObjPos(aList[0]);
 
     sizeArray++;
+
+    if(sizeArray<0)
+    {
+        throw std::invalid_argument("Array List is max Capacity.");
+    }
 }
 
 void objPosArrayList::insertTail(objPos thisPos)
@@ -40,6 +45,11 @@ void objPosArrayList::insertTail(objPos thisPos)
     thisPos.getObjPos(aList[sizeArray]);
 
     sizeArray++;
+
+    if(sizeArray>200)
+    {
+        throw std::invalid_argument("Array List is max Capacity.");
+    }
 }
 
 void objPosArrayList::removeHead()
@@ -59,6 +69,11 @@ void objPosArrayList::removeTail()
     aList[sizeArray-1].setObjPos(0, 0, 0);
 
     sizeArray--;
+    
+    if(sizeArray<0)
+    {
+        throw std::invalid_argument("Array List is Empty.");
+    }
 }
         
 void objPosArrayList::getHeadElement(objPos &returnPos)

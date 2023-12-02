@@ -3,9 +3,11 @@
 Player::Player(GameMechs* thisGMRef)
 {
     mainGameMechsRef = thisGMRef;
+    check = new objPos;
+    p_list = new objPosArrayList;
 
-    playerPos.x = (*mainGameMechsRef).getBoardSizeX()/2;
-    playerPos.y = (*mainGameMechsRef).getBoardSizeY()/2;
+    playerPos.x = mainGameMechsRef->getBoardSizeX()/2;
+    playerPos.y = mainGameMechsRef->getBoardSizeY()/2;
     playerPos.symbol = '@';
 
     check->x = 0;
@@ -36,12 +38,15 @@ void Player::updatePlayerDir()
 {
     // PPA3 input processing logic    
     
-    char move = (*mainGameMechsRef).getInput();
+    char move = mainGameMechsRef->getInput();
 
     switch (move)
     {
     case '\b':
-        (*mainGameMechsRef).setExitTrue();
+        mainGameMechsRef->setExitTrue();
+
+    case ' ':
+        mainGameMechsRef->setExitTrue();
         break;
     
     case 'w':
@@ -73,13 +78,11 @@ void Player::updatePlayerDir()
         break;
     }       
 
-    (*mainGameMechsRef).clearInput();
+    mainGameMechsRef->clearInput();
 }
 
 void Player::movePlayer()
 {
-    int i;
-
     // Collecting the Previous Position of the last member of the Array (will be useful in a second, I promise)
 
     objPos prev;
@@ -94,7 +97,7 @@ void Player::movePlayer()
 
         if(playerPos.y<0)
         {
-            playerPos.y = (*mainGameMechsRef).getBoardSizeY() - 1;
+            playerPos.y = mainGameMechsRef->getBoardSizeY() - 1;
         }
 
         break;
@@ -102,7 +105,7 @@ void Player::movePlayer()
     case down:
         playerPos.y++;
 
-        if(playerPos.y >= (*mainGameMechsRef).getBoardSizeY())
+        if(playerPos.y >= mainGameMechsRef->getBoardSizeY())
         {
             playerPos.y = 0;
         }
@@ -112,7 +115,7 @@ void Player::movePlayer()
     case right:
         playerPos.x++;
 
-        if(playerPos.x >= (*mainGameMechsRef).getBoardSizeX())
+        if(playerPos.x >= mainGameMechsRef->getBoardSizeX())
         {
             playerPos.x = 0;
         }
@@ -124,7 +127,7 @@ void Player::movePlayer()
 
         if(playerPos.x < 0)
         {
-            playerPos.x = (*mainGameMechsRef).getBoardSizeX() - 1;
+            playerPos.x = mainGameMechsRef->getBoardSizeX() - 1;
         }
 
         break;
@@ -135,11 +138,24 @@ void Player::movePlayer()
     p_list->insertHead(playerPos);
     p_list->removeTail();
 
+    // Check if Player has collided with itself or collected food
+
+    checkPlayer(prev);
+
+    // Printing Snake
+
+    printSnake();
+}
+
+void Player::checkPlayer(objPos prev)
+{
+    int i;
+
     // Checking if The player has collected food
 
     for(i=0; i<5; i++)
     {
-        (*mainGameMechsRef).getFoodPos(*check, i);
+        mainGameMechsRef->getFoodPos(*check, i);
 
         if(playerPos.isPosEqual(check))
         {
@@ -150,7 +166,7 @@ void Player::movePlayer()
             {
                 for(j=0; j<3; j++)
                 {
-                    (*mainGameMechsRef).incrementScore();
+                    mainGameMechsRef->incrementScore();
                 }
 
                 growPlayer(prev);
@@ -160,12 +176,12 @@ void Player::movePlayer()
             {
                 for(j=0; j<3; j++)
                 {
-                    (*mainGameMechsRef).minusScore();
+                    mainGameMechsRef->minusScore();
                 }
 
-                if((*mainGameMechsRef).getScore()<0)
+                if(mainGameMechsRef->getScore()<0)
                 {
-                    (*mainGameMechsRef).setLooseTrue();
+                    mainGameMechsRef->setLooseTrue();
                 }
 
                 growPlayer(prev);
@@ -177,19 +193,19 @@ void Player::movePlayer()
 
                 if(p_list->getSize()<1)
                 {
-                    (*mainGameMechsRef).setLooseTrue();
+                    mainGameMechsRef->setLooseTrue();
                 }
             }
 
             else
             {
-                (*mainGameMechsRef).incrementScore();
+                mainGameMechsRef->incrementScore();
                 growPlayer(prev);
             }
 
             // FOOD REGENERATION
 
-            (*mainGameMechsRef).generateFood(playerPos);
+            mainGameMechsRef->generateFood(playerPos);
             break;
         }
     }
@@ -202,14 +218,10 @@ void Player::movePlayer()
 
         if(playerPos.isPosEqual(check))
         {
-            (*mainGameMechsRef).setLooseTrue();
+            mainGameMechsRef->setLooseTrue();
             break;
         }
     }
-
-    // Printing Snake
-
-    printSnake();
 }
 
 void Player::growPlayer(objPos lastpos)
@@ -221,14 +233,19 @@ void Player::printSnake()
 {
     int i;
 
-    for(i=0; i<(*mainGameMechsRef).getBoardSizeY(); i++)
+    for(i=0; i<p_list->getSize(); i++)
     {
         p_list->getElement((*check), i);
-        (*mainGameMechsRef).map[check->y][check->x] = check->symbol;
+        mainGameMechsRef->map[check->y][check->x] = check->symbol;
     }
 }
 
 int Player::getPlayerDir()
 {
     return (int)curr;
+}
+
+int Player::snakelen()
+{
+    return p_list->getSize();
 }
