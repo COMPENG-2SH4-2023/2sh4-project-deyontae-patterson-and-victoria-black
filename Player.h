@@ -24,7 +24,8 @@ class Player
         void updatePlayerDir();
         void movePlayer();
         void growPlayer(objPos lastpos);
-        void checkPlayer(objPos prev);
+        void checkFoodCollision(objPos prev);
+        void checkSelfCollison();
         void printSnake();
         int snakelen();
 

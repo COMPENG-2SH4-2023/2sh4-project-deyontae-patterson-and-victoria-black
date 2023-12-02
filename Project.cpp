@@ -24,111 +24,6 @@ void DrawScreen(void);
 void LoopDelay(void);
 void CleanUp(void);
 
-void scoreboard(int player_score)
-{
-    int i;
-    int* scores = new int[5];
-    char** names = new char*[5];
-    FILE* file;
-
-    for(i=0; i<5; i++)
-    {
-        names[i] = new char[8];
-    }
-
-    // Read Names
-
-    file = fopen("names.txt", "r");
-
-    for(i=0; i<5; i++)
-    {
-        fscanf(file, "%s", names[i]);
-    }
-
-    fclose(file);
-
-    // Read Scores
-
-    file = fopen("scores.txt", "r");
-
-    for(i=0; i<5; i++)
-    {
-        fscanf(file, "%d", &scores[i]);
-    }
-
-    fclose(file);
-
-    // Operations
-
-    for(i=0; i<5; i++)
-    {
-        if(scores[i] < player_score)
-        {
-            // Insert new name and score into lists.
-
-            int j;
-
-            for(j=4; j>i; j--)
-            {
-                scores[j] = scores[j-1];
-                strcpy(names[j], names[j-1]);
-            }
-
-            scores[i] = player_score;
-
-            MacUILib_printf("\nCongratulations!\nYou made it to place %d on the Leaderboard!\n\nEnter your name (8 characters max):\n", (i+1));
-
-            cin >> names[i];
-
-            // Overwrite Names
-
-            file = fopen("names.txt", "w");
-
-            for (j=0; j<5; j++)
-            {
-                fprintf(file, "%s\n", names[j]);
-            }
-
-            fclose(file);
-
-            // Overwrite Scores
-
-            file = fopen("scores.txt", "w");
-
-            for (j=0; j<5; j++)
-            {
-                fprintf(file, "%d\n", scores[j]);
-            }
-
-            fclose(file);
-
-            break;
-        }
-    }
-
-    // Printing LeaderBoard
-
-    MacUILib_Delay(100000);
-    MacUILib_printf("\n\nLEADERBOARD:\n\n");
-
-    for(i=0; i<5; i++)
-    {
-        MacUILib_Delay(100000);
-        MacUILib_printf("%s -----> %d\n", names[i], scores[i]);
-    }
-
-    // Free space
-
-    for(int i=0; i<5; i++)
-    {
-        delete[] names[i];
-        names[i] = nullptr;
-    }
-
-    delete[] names;
-    delete[] scores;
-}
-
 int main(void)
 {
     Initialize();
@@ -354,6 +249,110 @@ void LoopDelay(void)
     MacUILib_Delay(snake->g_delay);
 }
 
+void scoreboard(int player_score)
+{
+    int i;
+    int* scores = new int[5];
+    char** names = new char*[5];
+    FILE* file;
+
+    for(i=0; i<5; i++)
+    {
+        names[i] = new char[8];
+    }
+
+    // Read Names
+
+    file = fopen("names.txt", "r");
+
+    for(i=0; i<5; i++)
+    {
+        fscanf(file, "%s", names[i]);
+    }
+
+    fclose(file);
+
+    // Read Scores
+
+    file = fopen("scores.txt", "r");
+
+    for(i=0; i<5; i++)
+    {
+        fscanf(file, "%d", &scores[i]);
+    }
+
+    fclose(file);
+
+    // Operations
+
+    for(i=0; i<5; i++)
+    {
+        if(scores[i] < player_score)
+        {
+            // Insert new name and score into lists.
+
+            int j;
+
+            for(j=4; j>i; j--)
+            {
+                scores[j] = scores[j-1];
+                strcpy(names[j], names[j-1]);
+            }
+
+            scores[i] = player_score;
+
+            MacUILib_printf("\nCongratulations!\nYou made it to place %d on the Leaderboard!\n\nEnter your name (8 characters max):\n", (i+1));
+
+            cin >> names[i];
+
+            // Overwrite Names
+
+            file = fopen("names.txt", "w");
+
+            for (j=0; j<5; j++)
+            {
+                fprintf(file, "%s\n", names[j]);
+            }
+
+            fclose(file);
+
+            // Overwrite Scores
+
+            file = fopen("scores.txt", "w");
+
+            for (j=0; j<5; j++)
+            {
+                fprintf(file, "%d\n", scores[j]);
+            }
+
+            fclose(file);
+
+            break;
+        }
+    }
+
+    // Printing LeaderBoard
+
+    MacUILib_Delay(100000);
+    MacUILib_printf("\n\nLEADERBOARD:\n\n");
+
+    for(i=0; i<5; i++)
+    {
+        MacUILib_Delay(100000);
+        MacUILib_printf("%s -----> %d\n", names[i], scores[i]);
+    }
+
+    // Free space
+
+    for(int i=0; i<5; i++)
+    {
+        delete[] names[i];
+        names[i] = nullptr;
+    }
+
+    delete[] names;
+    delete[] scores;
+}
 
 void CleanUp(void)
 {

@@ -140,18 +140,17 @@ void Player::movePlayer()
 
     // Check if Player has collided with itself or collected food
 
-    checkPlayer(prev);
+    checkFoodCollision(prev);
+    checkSelfCollison();
 
     // Printing Snake
 
     printSnake();
 }
 
-void Player::checkPlayer(objPos prev)
+void Player::checkFoodCollision(objPos prev)
 {
     int i;
-
-    // Checking if The player has collected food
 
     for(i=0; i<5; i++)
     {
@@ -209,8 +208,11 @@ void Player::checkPlayer(objPos prev)
             break;
         }
     }
+}
 
-    // Checking if the snake has eaten itself
+void Player::checkSelfCollison()
+{
+    int i;
 
     for(i=1; i<p_list->getSize(); i++)
     {
